@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-6">Minhas Obras</h1>
+
+<ul class="space-y-4">
+{% for imovel in imoveis %}
+  <li class="bg-white rounded-2xl shadow p-6 flex justify-between items-center">
+     <span>{{ imovel.titulo }}</span>
+     <a href="{% url 'works:timeline' imovel.pk %}"
+        class="px-4 py-1 rounded-xl bg-primary-600 text-white text-sm hover:opacity-90">
+        Ver progresso
+     </a>
+  </li>
+{% empty %}
+  <p>Nenhum imóvel com obra cadastrada.</p>
+{% endfor %}
+</ul>
+{% endblock %}

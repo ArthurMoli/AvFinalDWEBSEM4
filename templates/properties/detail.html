@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ object.titulo }}{% endblock %}
+{% block content %}
+<div class="grid md:grid-cols-2 gap-8">
+  <img src="{{ object.capa.url }}" class="rounded-2xl w-full h-auto">
+  <div>
+    <h1 class="text-3xl font-bold mb-2">{{ object.titulo }}</h1>
+    <p class="text-primary-600 text-xl font-semibold mb-4">{{ object.preco|floatformat:2 }} R$</p>
+    <p>{{ object.descricao }}</p>
+    <ul class="mt-4 space-y-1 text-sm text-gray-600">
+      <li>Tipo: {{ object.get_tipo_display }}</li>
+      <li>Quartos: {{ object.quartos }}</li>
+      <li>Publicado em: {{ object.data_pub|date:"d/m/Y" }}</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

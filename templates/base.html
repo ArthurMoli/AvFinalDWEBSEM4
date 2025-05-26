@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Imobiliária{% endblock %}</title>
+  <link href="{% static 'output.css' %}" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gray-50 flex flex-col">
+  <!-- NAV -->
+<header class="bg-gradient-to-r from-primary-500 to-indigo-600 text-white">
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <a href="{% url 'home' %}" class="font-bold flex items-center gap-1">
+      🏠 <span>Imob</span>
+    </a>
+
+<nav class="flex items-center gap-6 text-sm">
+  {% if user.is_authenticated %}
+      <a href="{% url 'imoveis' %}">Imóveis</a>
+
+      {% if user.perfil == 'CO' %}
+         <a href="{% url 'works:meus' %}">Minhas Obras</a>
+         <a href="{% url 'imovel_novo' %}">+ Anunciar</a>
+      {% endif %}
+
+      <a href="{% url 'notifications' %}">Notificações</a>
+      <a href="{% url 'logout' %}">Sair</a>
+  {% else %}
+      <a href="{% url 'login' %}">Entrar</a>
+  {% endif %}
+</nav>
+  </div>
+</header>
+
+  <main class="flex-1 container mx-auto px-4 py-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="bg-gray-200 text-center py-4 text-sm">
+    © {{ now|date:"Y" }} Imobiliária Syntax – Syntax Group
+  </footer>
+</body>
+</html>

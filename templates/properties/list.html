@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Imóveis{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Todos os imóveis</h1>
+<form method="get"
+      class="mb-8 flex flex-wrap gap-3 items-end bg-white/50 p-4 rounded-2xl shadow">
+      <div style="display: flex; flex-direction: row;">
+<div style="display: flex; flex-direction: column;">
+    <p>Tipo</p>
+  {{ view.filterset.form.tipo }}
+  </div>
+  <div style="display: flex; flex-direction: column; margin-left: 100px;">
+    <p>Número de Quartos</p>
+  {{ view.filterset.form.quartos }}
+</div>
+  <div style="display: flex; flex-direction: column; margin-left: 100px;margin-right: 100px;">
+    <p>Preço</p>
+  {{ view.filterset.form.preco__lte }}
+  </div>
+  <button class="px-4 py-2 rounded-xl bg-primary-600 text-white">Filtrar</button>
+  </div>
+</form>
+
+{% include "properties/_cards.html" with object_list=object_list %}
+{% endblock %}

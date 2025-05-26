@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-6">Notificações</h1>
+
+<ul class="space-y-2">
+  {% for n in notificacoes %}
+    <li class="p-4 bg-white rounded-xl shadow
+               {% if not n.lida %}ring-2 ring-primary-600{% endif %}">
+      {{ n.mensagem }}<br>
+      {% load humanize %}
+<span class="text-xs text-gray-500">{{ n.created_at|naturaltime }}</span>
+    </li>
+  {% empty %}
+    <p>Você não possui notificações.</p>
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-6">
+  Progresso da obra – {{ imovel.titulo }}
+</h1>
+
+<ul class="space-y-6">
+  {% for e in etapas %}
+    <li>
+      <p class="font-medium">{{ e.fase }} – {{ e.data|date:"d/m/Y" }}</p>
+      <div class="bg-gray-200 rounded-full h-4">
+        <div class="bg-primary-600 h-4 rounded-full transition-all"
+             style="width: {{ e.porcentagem }}%"></div>
+      </div>
+    </li>
+  {% empty %}
+    <p>Nenhuma atualização ainda.</p>
+  {% endfor %}
+</ul>
+{% endblock %}

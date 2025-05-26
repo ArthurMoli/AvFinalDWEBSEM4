@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Imóveis recentes</h1>
+{% include "properties/_cards.html" with object_list=imoveis %}
+{% endblock %}
