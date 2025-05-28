@@ -24,7 +24,10 @@
       {% endif %}
 
       <a href="{% url 'notifications' %}">Notificações</a>
-      <a href="{% url 'logout' %}">Sair</a>
+      <form action="{% url 'logout' %}" method="post" class="inline">
+  {% csrf_token %}
+  <button class="hover:underline">Sair</button>
+</form>
   {% else %}
       <a href="{% url 'login' %}">Entrar</a>
   {% endif %}

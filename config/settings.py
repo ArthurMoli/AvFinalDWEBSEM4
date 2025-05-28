@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # Apps internos
     'users', 'properties', 'works', 'core', 'reports',
      "django.contrib.humanize",
+     "widget_tweaks",
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -67,6 +68,10 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+TEMPLATES[0]["OPTIONS"]["context_processors"] += [
+    "core.context_processors.badge_notifs",
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'

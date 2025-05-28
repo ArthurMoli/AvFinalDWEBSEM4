@@ -8,4 +8,4 @@ def avisar_cliente(sender, instance, created, **kwargs):
     if created:
         cliente = instance.imovel.owner
         msg = f"Obra de {instance.imovel.titulo} avançou para {instance.porcentagem}%"
-        Notificacao.objects.create(usuario=cliente, mensagem=msg)
+        Notificacao.objects.create(user=cliente, mensagem=msg)

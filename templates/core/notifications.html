@@ -1,17 +1,30 @@
 {% extends "base.html" %}
-{% block content %}
-<h1 class="text-2xl font-semibold mb-6">Notificações</h1>
+{% load humanize %}
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-semibold">Notificações</h1>
+  {% if notificacoes_unread %}
+    <a href="{% url 'notifs_ler_todas' %}"
+       class="text-sm text-primary-600 hover:underline">
+       Marcar todas como lidas
+    </a>
+  {% endif %}
+</div>
 
-<ul class="space-y-2">
-  {% for n in notificacoes %}
-    <li class="p-4 bg-white rounded-xl shadow
-               {% if not n.lida %}ring-2 ring-primary-600{% endif %}">
-      {{ n.mensagem }}<br>
-      {% load humanize %}
-<span class="text-xs text-gray-500">{{ n.created_at|naturaltime }}</span>
-    </li>
-  {% empty %}
-    <p>Você não possui notificações.</p>
-  {% endfor %}
+<ul class="space-y-3">
+{% for n in notificacoes %}
+  <li class="p-4 bg-white rounded-xl shadow
+             {% if not n.lida %}ring-2 ring-primary-600{% endif %}">
+      {{ n.mensagem }}
+      <span class="text-xs text-gray-500 block">{{ n.created_at|naturaltime }}</span>
+
+      {% if not n.lida %}
+        <a href="{% url 'notifs_ler' n.pk %}"
+           class="text-xs text-primary-600 hover:underline">
+           marcar como lida
+        </a>
+      {% endif %}
+  </li>
+{% empty %}
+  <p>Você não possui notificações.</p>
+{% endfor %}
 </ul>
-{% endblock %}

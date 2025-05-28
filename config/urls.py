@@ -17,8 +17,10 @@ Including another URLconf
 from django.contrib import admin              #  ← Faltava isto
 from django.urls import path, include
 from core.views import HomeView, NotificacoesView
+from core import views as core_views
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import LogoutView
+from django.contrib.auth import views as auth_views
 urlpatterns = [
     path("admin/",   admin.site.urls),
 
@@ -36,6 +38,10 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
 
     # logout GET-friendly → /logout/
-    path("logout/", LogoutView.as_view(next_page="login"), name="logout"),
+
+path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("notificacoes/", NotificacoesView.as_view(), name="notifications"),
+    path("notificacoes/ler_todas/", core_views.marcar_todas_lidas, name="notifs_ler_todas"),
+path("notificacoes/ler/<int:pk>/", core_views.marcar_uma_lida,   name="notifs_ler"),
+
 ]

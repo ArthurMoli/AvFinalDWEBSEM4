@@ -42,10 +42,11 @@ class ObraAddView(LoginRequiredMixin,
                   PermissionRequiredMixin,
                   CreateView):
     permission_required = "properties.pode_publicar"
-    form_class = ObraStatusForm
+    form_class  = ObraStatusForm
     template_name = "works/add.html"
-    success_url = reverse_lazy("works:meus")
+    success_url   = reverse_lazy("works:meus")
+
     def get_form_kwargs(self):
-        kw = super().get_form_kwargs()
-        kw["user"] = self.request.user
-        return kw
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user   # <- aqui
+        return kwargs

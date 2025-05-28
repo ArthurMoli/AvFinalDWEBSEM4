@@ -1,6 +1,13 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h1 class="text-2xl font-semibold mb-6">Minhas Obras</h1>
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-semibold">Minhas Obras</h1>
+  <a href="{% url 'works:add' %}"
+     class="px-4 py-1 rounded-xl bg-primary-600 text-white text-sm hover:opacity-90">
+     + Adicionar etapa
+  </a>
+</div>
 
 <ul class="space-y-4">
 {% for imovel in imoveis %}
