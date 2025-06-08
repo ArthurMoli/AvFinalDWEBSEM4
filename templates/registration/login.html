@@ -1,13 +1,54 @@
 {% extends "base.html" %}
 {% load static %}
-{% block content %}
-<h1 class="text-2xl font-semibold mb-6">Entrar</h1>
+{% load widget_tweaks %}
 
-<form method="post" class="space-y-4 max-w-xs">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button class="px-6 py-2 rounded-xl bg-primary-600 text-white w-full">
-    Entrar
-  </button>
-</form>
+{% block title %}Entrar{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto animate-fade-in">
+  <div class="card">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-primary mb-2">🔐 Entrar</h1>
+      <p class="text-secondary">Acesse sua conta</p>
+    </div>
+
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      
+      {% if form.errors %}
+        <div class="alert-error">
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div>
+        <label class="label">{{ form.username.label }}</label>
+        {{ form.username|add_class:"field" }}
+      </div>
+
+      <div>
+        <label class="label">{{ form.password.label }}</label>
+        {{ form.password|add_class:"field" }}
+      </div>
+
+      <button type="submit" class="btn-primary w-full">
+        🚀 Entrar
+      </button>
+    </form>
+
+    <div class="text-center mt-6 pt-6 border-t border-border space-y-3">
+      <p class="text-muted">
+        Não tem conta? 
+        <a href="{% url 'users:signup' %}" class="link-green">Criar conta gratuita</a>
+      </p>
+      <p class="text-muted text-sm">
+        <a href="#" class="link-green">Esqueceu a senha?</a>
+      </p>
+    </div>
+  </div>
+</div>
 {% endblock %}

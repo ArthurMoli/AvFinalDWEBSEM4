@@ -1,6 +1,35 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-<h1 class="text-2xl font-semibold mb-4">Imóveis recentes</h1>
-{% include "properties/_cards.html" with object_list=imoveis %}
+
+<div class="animate-fade-in">
+  <!-- Hero Section -->
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-primary mb-4">🏠 Encontre seu Imóvel dos Sonhos</h1>
+    <p class="text-secondary text-lg">Descubra as melhores oportunidades imobiliárias</p>
+  </div>
+
+  <!-- Imóveis Recentes -->
+  <div class="mb-6">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold text-primary">Imóveis Recentes</h2>
+      <a href="{% url 'imoveis' %}" class="link-green">Ver todos →</a>
+    </div>
+    
+    {% include "properties/_cards.html" with object_list=imoveis %}
+  </div>
+
+  <!-- Call to Action -->
+  {% if not user.is_authenticated %}
+  <div class="card text-center mt-8">
+    <h3 class="text-xl font-semibold text-primary mb-4">Pronto para começar?</h3>
+    <p class="text-secondary mb-6">Crie sua conta e tenha acesso completo à plataforma</p>
+    <div class="flex gap-4 justify-center">
+      <a href="{% url 'users:signup' %}" class="btn-primary">🚀 Criar Conta</a>
+      <a href="{% url 'login' %}" class="btn-secondary">🔐 Fazer Login</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
 {% endblock %}

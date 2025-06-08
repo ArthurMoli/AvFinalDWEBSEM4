@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Meus Interesses{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-primary">💚 Meus Interesses</h1>
+      <p class="text-secondary">Acompanhe os imóveis que você favoritou</p>
+    </div>
+    <a href="{% url 'imoveis' %}" class="btn-secondary">
+      🔍 Explorar Mais Imóveis
+    </a>
+  </div>
+
+  {% if interesses %}
+    <div class="grid gap-6 grid-cols-1 md:grid-cols-2">
+      {% for interesse in interesses %}
+        <div class="card">
+          <!-- Imagem -->
+          <img src="{{ interesse.imovel.capa_url }}" 
+               alt="{{ interesse.imovel.titulo }}"
+               class="w-full h-48 object-cover rounded-lg mb-4">
+          
+          <!-- Informações -->
+          <div class="space-y-4">
+            <div>
+              <h3 class="text-lg font-semibold text-primary">{{ interesse.imovel.titulo }}</h3>
+              <p class="text-muted">{{ interesse.imovel.get_tipo_display }} • {{ interesse.imovel.quartos }} quartos</p>
+              <p class="text-accent text-xl font-bold">R$ {{ interesse.imovel.preco|floatformat:2 }}</p>
+              <p class="text-muted text-xs">
+                💚 Interesse desde {{ interesse.data_interesse|naturaltime }}
+              </p>
+            </div>
+
+            <!-- Informações do Corretor -->
+            <div class="p-3 rounded-lg" style="background-color: var(--bg-input);">
+              <p class="text-sm text-muted">Corretor:</p>
+              <p class="text-primary font-medium">
+                {{ interesse.imovel.owner.get_full_name|default:interesse.imovel.owner.username }}
+              </p>
+            </div>
+
+            <!-- Status da Obra (se houver) -->
+            {% if interesse.imovel.obras.all %}
+              <div class="p-3 rounded-lg" style="background-color: var(--bg-input);">
+                <p class="text-sm text-muted mb-2">🏗️ Progresso da Obra:</p>
+                {% with ultima_obra=interesse.imovel.obras.all.0 %}
+                  <div class="flex justify-between text-sm">
+                    <span class="text-primary">{{ ultima_obra.fase }}</span>
+                    <span class="text-accent font-semibold">{{ ultima_obra.porcentagem }}%</span>
+                  </div>
+                  <div class="w-full bg-gray-600 rounded-full h-2 mt-2">
+                    <div class="h-2 rounded-full" 
+                         style="background-color: var(--accent-green); width: {{ ultima_obra.porcentagem }}%"></div>
+                  </div>
+                {% endwith %}
+              </div>
+            {% endif %}
+
+            <!-- Botões de Ação -->
+            <div class="flex gap-2">
+              <a href="{% url 'imovel' interesse.imovel.pk %}" 
+                 class="btn-primary flex-1 text-center">
+                👁️ Ver Detalhes
+              </a>
+              <form method="post" action="{% url 'toggle_interesse' interesse.imovel.pk %}" class="flex-1">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="btn-secondary w-full"
+                        style="border-color: var(--danger); color: var(--danger);"
+                        onmouseover="this.style.backgroundColor='var(--danger)'; this.style.color='white'"
+                        onmouseout="this.style.backgroundColor='var(--bg-card)'; this.style.color='var(--danger)'">
+                  💔 Remover
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Estatísticas -->
+    <div class="card mt-8">
+      <h3 class="text-lg font-semibold text-accent mb-4">📊 Suas Estatísticas</h3>
+      <div class="grid gap-4 grid-cols-1 md:grid-cols-3">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-accent">{{ interesses|length }}</div>
+          <div class="text-sm text-muted">Imóveis de Interesse</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-accent">
+            {% for interesse in interesses %}{{ interesse.imovel.preco|floatformat:0|add:0 }}{% empty %}0{% endfor %}
+          </div>
+          <div class="text-sm text-muted">Valor Total (R$)</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-accent">
+            {{ interesses.0.data_interesse|date:"d/m" }}
+          </div>
+          <div class="text-sm text-muted">Último Interesse</div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <!-- Estado Vazio -->
+    <div class="card text-center py-12">
+      <div class="text-6xl mb-6">💚</div>
+      <h3 class="text-xl font-semibold text-primary mb-4">Nenhum interesse ainda</h3>
+      <p class="text-secondary mb-6">
+        Explore nossa seleção de imóveis e favorite aqueles que mais chamarem sua atenção.
+      </p>
+      <a href="{% url 'imoveis' %}" class="btn-primary">
+        🔍 Explorar Imóveis
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,17 +1,111 @@
 {% extends "base.html" %}
 {% block title %}{{ object.titulo }}{% endblock %}
 {% block content %}
-<div class="grid md:grid-cols-2 gap-8">
-  <img src="{{ object.capa.url }}" class="rounded-2xl w-full h-auto">
-  <div>
-    <h1 class="text-3xl font-bold mb-2">{{ object.titulo }}</h1>
-    <p class="text-primary-600 text-xl font-semibold mb-4">{{ object.preco|floatformat:2 }} R$</p>
-    <p>{{ object.descricao }}</p>
-    <ul class="mt-4 space-y-1 text-sm text-gray-600">
-      <li>Tipo: {{ object.get_tipo_display }}</li>
-      <li>Quartos: {{ object.quartos }}</li>
-      <li>Publicado em: {{ object.data_pub|date:"d/m/Y" }}</li>
-    </ul>
+
+<div class="animate-fade-in">
+  <div class="grid gap-8 grid-cols-1 md:grid-cols-2">
+    <!-- Imagem -->
+    <div>
+      <img src="{{ object.capa_url }}" 
+           alt="{{ object.titulo }}" 
+           class="w-full rounded-2xl shadow-xl"
+           style="height: 400px; object-fit: cover;">
+    </div>
+    
+    <!-- Informações -->
+    <div>
+      <h1 class="text-3xl font-bold text-primary mb-4">{{ object.titulo }}</h1>
+      
+      <div class="mb-6">
+        <span class="text-3xl font-bold text-accent">R$ {{ object.preco|floatformat:2 }}</span>
+      </div>
+      
+      <p class="text-secondary text-lg mb-6">{{ object.descricao }}</p>
+      
+      <!-- Detalhes -->
+      <div class="card mb-6">
+        <h3 class="text-lg font-semibold text-accent mb-4">📋 Detalhes do Imóvel</h3>
+        <div class="grid gap-3 grid-cols-1 md:grid-cols-2">
+          <div class="flex justify-between">
+            <span class="text-muted">Tipo:</span>
+            <span class="text-primary font-medium">{{ object.get_tipo_display }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted">Quartos:</span>
+            <span class="text-primary font-medium">{{ object.quartos }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted">Publicado em:</span>
+            <span class="text-primary font-medium">{{ object.data_pub|date:"d/m/Y" }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted">Corretor:</span>
+            <span class="text-primary font-medium">{{ object.owner.get_full_name|default:object.owner.username }}</span>
+          </div>
+        </div>
+        
+        <div class="mt-4 pt-4" style="border-top: 1px solid var(--border);">
+          <div class="flex justify-between">
+            <span class="text-muted">Endereço:</span>
+            <span class="text-primary font-medium">{{ object.endereco }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Botão de Interesse (Cliente) -->
+      {% if user.is_authenticated and user.perfil == 'CL' %}
+        <form method="post" action="{% url 'toggle_interesse' object.pk %}" class="mb-6">
+          {% csrf_token %}
+          {% if tem_interesse %}
+            <button type="submit" class="btn-primary w-full">
+              💔 Remover Interesse
+            </button>
+          {% else %}
+            <button type="submit" class="btn-primary w-full">
+              💚 Tenho Interesse
+            </button>
+          {% endif %}
+        </form>
+      {% endif %}
+      
+      <!-- Ações do Proprietário -->
+      {% if user == object.owner %}
+        <div class="card">
+          <h3 class="text-lg font-semibold text-accent mb-4">⚙️ Gerenciar Imóvel</h3>
+          
+          <!-- Estatísticas -->
+          <div class="grid gap-4 grid-cols-2 mb-6">
+            <div class="text-center p-4 rounded-lg" style="background-color: var(--bg-input);">
+              <div class="text-2xl font-bold text-accent">{{ object.interessados.count }}</div>
+              <div class="text-sm text-muted">Interessados</div>
+            </div>
+            <div class="text-center p-4 rounded-lg" style="background-color: var(--bg-input);">
+              <div class="text-2xl font-bold text-accent">{{ object.obras.count }}</div>
+              <div class="text-sm text-muted">Atualizações de Obra</div>
+            </div>
+          </div>
+          
+          <!-- Botões de Ação -->
+          <div class="grid gap-3 grid-cols-1 md:grid-cols-2">
+            <a href="{% url 'imovel_editar' object.pk %}" class="btn-secondary text-center">
+              ✏️ Editar Imóvel
+            </a>
+            <a href="{% url 'works:timeline' object.pk %}" class="btn-secondary text-center">
+              🏗️ Gerenciar Obra
+            </a>
+          </div>
+          
+          <a href="{% url 'imovel_excluir' object.pk %}" 
+             class="btn-primary w-full mt-3 text-center"
+             style="background-color: var(--danger);"
+             onmouseover="this.style.backgroundColor='#dc2626'"
+             onmouseout="this.style.backgroundColor='var(--danger)'">
+            🗑️ Excluir Imóvel
+          </a>
+        </div>
+      {% endif %}
+    </div>
   </div>
 </div>
+
 {% endblock %}

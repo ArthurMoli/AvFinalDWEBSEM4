@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Meu Perfil{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto animate-fade-in">
+  <div class="card">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-primary">👤 Meu Perfil</h1>
+      <a href="{% url 'users:profile_edit' %}" class="btn-primary">
+        ✏️ Editar Perfil
+      </a>
+    </div>
+
+    <div class="space-y-6">
+      <!-- Informações Básicas -->
+      <div class="card-highlight">
+        <h3 class="text-lg font-semibold text-accent mb-4">📋 Informações Básicas</h3>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="label">Nome Completo</label>
+            <p class="text-primary font-medium">{{ user.get_full_name|default:"Não informado" }}</p>
+          </div>
+          <div>
+            <label class="label">Nome de Usuário</label>
+            <p class="text-primary font-medium">{{ user.username }}</p>
+          </div>
+          <div>
+            <label class="label">E-mail</label>
+            <p class="text-primary font-medium">{{ user.email|default:"Não informado" }}</p>
+          </div>
+          <div>
+            <label class="label">Telefone</label>
+            <p class="text-primary font-medium">{{ user.telefone|default:"Não informado" }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tipo de Conta -->
+      <div class="card-highlight">
+        <h3 class="text-lg font-semibold text-accent mb-4">🎯 Tipo de Conta</h3>
+        <div class="flex items-center gap-3">
+          {% if user.perfil == 'CL' %}
+            <span class="badge">👥 Cliente</span>
+            <p class="text-secondary">Você pode navegar, favoritar e acompanhar obras</p>
+          {% else %}
+            <span class="badge">🏢 Corretor</span>
+            <p class="text-secondary">Você pode publicar imóveis e gerenciar obras</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Estatísticas -->
+      <div class="card-highlight">
+        <h3 class="text-lg font-semibold text-accent mb-4">📊 Suas Atividades</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {% if user.perfil == 'CL' %}
+            <div class="text-center">
+              <div class="text-2xl font-bold text-accent">{{ user.interesses.count }}</div>
+              <div class="text-sm text-muted">Imóveis de Interesse</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-accent">{{ user.notificacao_set.count }}</div>
+              <div class="text-sm text-muted">Notificações</div>
+            </div>
+          {% else %}
+            <div class="text-center">
+              <div class="text-2xl font-bold text-accent">{{ user.imoveis.count }}</div>
+              <div class="text-sm text-muted">Imóveis Publicados</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-accent">
+                {% with total_interessados=user.imoveis.all|length %}
+                  {% for imovel in user.imoveis.all %}{{ imovel.interessados.count|add:0 }}{% empty %}0{% endfor %}
+                {% endwith %}
+              </div>
+              <div class="text-sm text-muted">Total de Interessados</div>
+            </div>
+          {% endif %}
+          <div class="text-center">
+            <div class="text-2xl font-bold text-accent">{{ user.date_joined|date:"d/m/Y" }}</div>
+            <div class="text-sm text-muted">Membro desde</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ações Rápidas -->
+      <div class="card-highlight">
+        <h3 class="text-lg font-semibold text-accent mb-4">⚡ Ações Rápidas</h3>
+        <div class="flex flex-wrap gap-3">
+          {% if user.perfil == 'CL' %}
+            <a href="{% url 'imoveis' %}" class="btn-secondary">🏠 Ver Imóveis</a>
+            <a href="{% url 'meus_interesses' %}" class="btn-secondary">💚 Meus Interesses</a>
+          {% else %}
+            <a href="{% url 'meus_imoveis' %}" class="btn-secondary">🏠 Meus Imóveis</a>
+            <a href="{% url 'imovel_novo' %}" class="btn-primary">+ Novo Imóvel</a>
+            <a href="{% url 'works:meus' %}" class="btn-secondary">🏗️ Minhas Obras</a>
+          {% endif %}
+          <a href="{% url 'notifications' %}" class="btn-secondary">🔔 Notificações</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

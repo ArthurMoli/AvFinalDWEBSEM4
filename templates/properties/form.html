@@ -1,24 +1,163 @@
 {% extends "base.html" %}
-{% block title %}Novo anúncio{% endblock %}
+{% block title %}{% if is_edit %}Editar{% else %}Novo{% endif %} Imóvel{% endblock %}
 {% block content %}
-<h1 class="text-2xl font-semibold mb-4">Novo anúncio</h1>
 
-<form method="post" enctype="multipart/form-data"
-      class="space-y-4 max-w-xl bg-white p-6 rounded-2xl shadow">
-  {% csrf_token %}
-  {{ form.non_field_errors }}
-
-  {% for field in form %}
-    <div>
-      <label class="block text-sm font-medium mb-1">{{ field.label }}:</label>
-      {{ field }}
-      {% if field.help_text %}<p class="text-xs text-gray-500">{{ field.help_text }}</p>{% endif %}
-      {% for error in field.errors %}
-        <p class="text-xs text-red-600">{{ error }}</p>
-      {% endfor %}
+<div class="max-w-2xl mx-auto animate-fade-in">
+  <div class="card">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-primary mb-2">
+        {% if is_edit %}
+          ✏️ Editar Imóvel
+        {% else %}
+          ➕ Novo Anúncio
+        {% endif %}
+      </h1>
+      <p class="text-secondary">
+        {% if is_edit %}
+          Atualize as informações do seu imóvel
+        {% else %}
+          Preencha os dados para criar um novo anúncio
+        {% endif %}
+      </p>
     </div>
-  {% endfor %}
 
-  <button class="px-6 py-2 rounded-xl bg-primary-600 text-white">Salvar</button>
-</form>
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      
+      <!-- Erros gerais -->
+      {% if form.non_field_errors %}
+        <div class="alert-error">
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Campos do formulário -->
+      {% for field in form %}
+        <div>
+          <label class="label" for="{{ field.id_for_label }}">
+            {{ field.label }}
+            {% if field.field.required %}<span class="text-accent">*</span>{% endif %}
+          </label>
+          
+          {% if field.name == 'descricao' %}
+            <textarea name="{{ field.name }}" 
+                      id="{{ field.id_for_label }}"
+                      class="field" 
+                      rows="4"
+                      placeholder="Descreva o imóvel detalhadamente..."
+                      {% if field.field.required %}required{% endif %}>{{ field.value|default:'' }}</textarea>
+          {% elif field.name == 'tipo' %}
+            <select name="{{ field.name }}" 
+                    id="{{ field.id_for_label }}"
+                    class="field"
+                    {% if field.field.required %}required{% endif %}>
+              <option value="">Selecione o tipo</option>
+              {% for value, label in field.field.choices %}
+                <option value="{{ value }}" {% if field.value == value %}selected{% endif %}>
+                  {{ label }}
+                </option>
+              {% endfor %}
+            </select>
+          {% elif field.name == 'preco' %}
+            <input type="number" 
+                   name="{{ field.name }}" 
+                   id="{{ field.id_for_label }}"
+                   class="field" 
+                   step="0.01"
+                   min="0"
+                   placeholder="Ex: 350000.00"
+                   value="{{ field.value|default:'' }}"
+                   {% if field.field.required %}required{% endif %}>
+          {% elif field.name == 'quartos' %}
+            <input type="number" 
+                   name="{{ field.name }}" 
+                   id="{{ field.id_for_label }}"
+                   class="field" 
+                   min="1"
+                   max="20"
+                   placeholder="Ex: 3"
+                   value="{{ field.value|default:'' }}"
+                   {% if field.field.required %}required{% endif %}>
+          {% elif field.name == 'capa_url' %}
+            <input type="url" 
+                   name="{{ field.name }}" 
+                   id="{{ field.id_for_label }}"
+                   class="field" 
+                   placeholder="https://exemplo.com/foto-do-imovel.jpg"
+                   value="{{ field.value|default:'' }}"
+                   {% if field.field.required %}required{% endif %}>
+          {% else %}
+            <input type="text" 
+                   name="{{ field.name }}" 
+                   id="{{ field.id_for_label }}"
+                   class="field" 
+                   placeholder="{{ field.field.widget.attrs.placeholder|default:field.label }}"
+                   value="{{ field.value|default:'' }}"
+                   {% if field.field.required %}required{% endif %}>
+          {% endif %}
+          
+          {% if field.help_text %}
+            <p class="text-muted text-sm mt-1">{{ field.help_text }}</p>
+          {% endif %}
+          
+          {% if field.errors %}
+            <div class="text-red-400 text-sm mt-1">
+              {% for error in field.errors %}
+                <p>❌ {{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <!-- Botões -->
+      <div class="flex gap-4 pt-4">
+        <button type="submit" class="btn-primary flex-1">
+          {% if is_edit %}💾 Atualizar Imóvel{% else %}📝 Criar Anúncio{% endif %}
+        </button>
+        <a href="{% if is_edit %}{% url 'imovel' object.pk %}{% else %}{% url 'imoveis' %}{% endif %}" 
+           class="btn-secondary">
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+/* Garantir que todos os inputs tenham o estilo correto */
+.field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--bg-input);
+  border: 2px solid var(--border);
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.field:focus {
+  background-color: var(--bg-secondary);
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  outline: none;
+}
+
+.field::placeholder {
+  color: var(--text-muted);
+}
+
+select.field option {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Estilo para campos obrigatórios */
+.label span {
+  color: var(--accent-green);
+}
+</style>
+
 {% endblock %}

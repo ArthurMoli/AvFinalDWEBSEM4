@@ -1,105 +1,209 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
 
-{% block title %}Adicionar etapa da obra{% endblock %}
+{% block title %}Adicionar Etapa da Obra{% endblock %}
 
 {% block content %}
+<div class="max-w-2xl mx-auto animate-fade-in">
+  <div class="card">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-primary mb-2">🏗️ Registrar Progresso da Obra</h1>
+      <p class="text-secondary">Mantenha seus clientes informados sobre o andamento</p>
+    </div>
+
+    <!-- Alerta Informativo -->
+    <div class="alert-info mb-6">
+      <strong>⚠️ Regra Importante:</strong> A porcentagem da obra só pode avançar, nunca retroceder. 
+      Certifique-se de inserir um valor maior que o progresso atual.
+    </div>
+
+    <form method="post" id="obra-form" class="space-y-6">
+      {% csrf_token %}
+
+      <!-- Exibir erros do formulário -->
+      {% if form.non_field_errors %}
+        <div class="alert-error">
+          {% for error in form.non_field_errors %}
+            <p><strong>❌ Erro:</strong> {{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Imóvel -->
+      <div>
+        <label class="label" for="{{ form.imovel.id_for_label }}">
+          🏠 Imóvel <span class="text-accent">*</span>
+        </label>
+        <select name="{{ form.imovel.name }}" 
+                id="{{ form.imovel.id_for_label }}"
+                class="field"
+                required>
+          <option value="">Selecione um imóvel</option>
+          {% for choice in form.imovel.field.queryset %}
+            <option value="{{ choice.pk }}" {% if form.imovel.value == choice.pk %}selected{% endif %}>
+              {{ choice.titulo }} - R$ {{ choice.preco|floatformat:0 }}
+            </option>
+          {% endfor %}
+        </select>
+        {% if form.imovel.errors %}
+          <div class="text-red-400 text-sm mt-1">
+            {% for error in form.imovel.errors %}
+              <p>❌ {{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Informações do progresso atual -->
+      <div id="progress-info" 
+           class="p-4 rounded-lg" 
+           style="background-color: var(--bg-input); border-left: 4px solid var(--accent-green); display: none;">
+        <h4 class="font-semibold text-accent mb-2">📊 Progresso Atual</h4>
+        <p id="current-progress" class="text-secondary text-sm">
+          Selecione um imóvel para ver o progresso atual
+        </p>
+      </div>
+
+      <!-- Fase da obra -->
+      <div>
+        <label class="label" for="{{ form.fase.id_for_label }}">
+          🔧 Fase da Obra <span class="text-accent">*</span>
+        </label>
+        <input type="text" 
+               name="{{ form.fase.name }}" 
+               id="{{ form.fase.id_for_label }}"
+               class="field" 
+               placeholder="Ex: Fundação, Estrutura, Acabamento, Pintura..."
+               value="{{ form.fase.value|default:'' }}"
+               required>
+        <p class="text-muted text-sm mt-1">
+          Descreva em qual etapa da construção o imóvel se encontra
+        </p>
+        {% if form.fase.errors %}
+          <div class="text-red-400 text-sm mt-1">
+            {% for error in form.fase.errors %}
+              <p>❌ {{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Porcentagem -->
+      <div>
+        <label class="label" for="{{ form.porcentagem.id_for_label }}">
+          📈 Porcentagem de Conclusão <span class="text-accent">*</span>
+        </label>
+        <input type="number" 
+               name="{{ form.porcentagem.name }}" 
+               id="{{ form.porcentagem.id_for_label }}"
+               class="field" 
+               min="0" 
+               max="100"
+               placeholder="Ex: 75"
+               value="{{ form.porcentagem.value|default:'' }}"
+               required>
+        <p class="text-muted text-sm mt-1">
+          Digite um número entre 0 e 100 (maior que o progresso atual)
+        </p>
+        {% if form.porcentagem.errors %}
+          <div class="text-red-400 text-sm mt-1">
+            {% for error in form.porcentagem.errors %}
+              <p>❌ {{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Botões -->
+      <div class="flex gap-4 pt-4">
+        <button type="submit" class="btn-primary flex-1">
+          💾 Salvar Progresso
+        </button>
+        <a href="{% url 'works:meus' %}" class="btn-secondary">
+          ← Voltar
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f8f9fa;
-        margin: 0;
-        padding: 0;
-    }
+/* Garantir estilos consistentes */
+.alert-info {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: rgba(59, 130, 246, 0.1);
+  border: 1px solid #3b82f6;
+  color: #93c5fd;
+}
 
-    .form-container {
-        max-width: 700px;
-        margin: 40px auto;
-        background-color: #fff;
-        padding: 30px 40px;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
+.field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--bg-input);
+  border: 2px solid var(--border);
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
 
-    h1 {
-        font-size: 26px;
-        margin-bottom: 25px;
-        color: #333;
-    }
+.field:focus {
+  background-color: var(--bg-secondary);
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  outline: none;
+}
 
-    label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: bold;
-        color: #444;
-    }
+select.field option {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
 
-    .field {
-        width: 100%;
-        padding: 10px 12px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 16px;
-    }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
-    input[type="number"]::-webkit-inner-spin-button {
-        margin-left: 4px;
-    }
-
-    .btn-salvar {
-        background-color: #5c6bc0;
-        color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 6px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn-salvar:hover {
-        background-color: #3f51b5;
-    }
-
-    .form-group {
-        margin-top: 30px;
-    }
-
-    .small-text {
-        color: #777;
-        font-size: 13px;
-        margin-top: -12px;
-        margin-bottom: 10px;
-    }
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 </style>
 
-<div class="form-container">
-    <h1>Registrar progresso da obra</h1>
-
-    <form method="post">
-        {% csrf_token %}
-
-        <!-- Imóvel -->
-        <div class="form-group">
-            <label for="id_imovel">Imóvel</label>
-            {{ form.imovel|add_class:"field" }}
-        </div>
-
-        <!-- Fase da obra -->
-        <div class="form-group">
-            <label for="id_fase">Fase da obra</label>
-            {{ form.fase|add_class:"field" }}
-            <p class="small-text">Ex.: Fundação, Estrutura, Acabamento…</p>
-        </div>
-
-        <!-- Porcentagem -->
-        <div class="form-group">
-            <label for="id_porcentagem">Porcentagem&nbsp;(%)</label>
-            {{ form.porcentagem|add_class:"field" }}
-        </div>
-
-        <button type="submit" class="btn-salvar">Salvar</button>
-    </form>
-</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imovelSelect = document.getElementById('id_imovel');
+    const progressInfo = document.getElementById('progress-info');
+    const currentProgress = document.getElementById('current-progress');
+    const porcentagemInput = document.getElementById('id_porcentagem');
+    
+    imovelSelect.addEventListener('change', function() {
+        if (this.value) {
+            progressInfo.style.display = 'block';
+            currentProgress.innerHTML = '⏳ Carregando informações do progresso atual...';
+            
+            setTimeout(function() {
+                currentProgress.innerHTML = 'ℹ️ Certifique-se de inserir uma porcentagem maior que a atual.';
+            }, 500);
+        } else {
+            progressInfo.style.display = 'none';
+        }
+    });
+    
+    // Validação visual da porcentagem
+    porcentagemInput.addEventListener('input', function() {
+        const value = parseInt(this.value);
+        if (value > 100) {
+            this.style.borderColor = 'var(--danger)';
+            this.title = 'A porcentagem não pode ser maior que 100%';
+        } else if (value < 0) {
+            this.style.borderColor = 'var(--danger)';
+            this.title = 'A porcentagem não pode ser negativa';
+        } else {
+            this.style.borderColor = 'var(--border)';
+            this.title = '';
+        }
+    });
+});
+</script>
 {% endblock %}

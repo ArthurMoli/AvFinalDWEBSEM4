@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Criar Conta{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto animate-fade-in">
+  <div class="card">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-primary mb-2">🎉 Criar Conta</h1>
+      <p class="text-secondary">Junte-se à nossa plataforma imobiliária</p>
+    </div>
+
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      
+      <!-- Erros gerais -->
+      {% if form.non_field_errors %}
+        <div class="alert-error">
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Tipo de Conta -->
+      <div class="card-highlight">
+        <h3 class="text-lg font-semibold text-accent mb-4">🎯 Tipo de Conta</h3>
+        <div class="space-y-3">
+          {% for radio in form.perfil %}
+            <label class="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-dark-secondary transition-colors">
+              {{ radio.tag }}
+              <div>
+                <div class="font-medium text-primary">
+                  {% if radio.choice_value == 'CL' %}
+                    👥 Cliente - Quero encontrar imóveis
+                  {% else %}
+                    🏢 Corretor - Quero anunciar imóveis
+                  {% endif %}
+                </div>
+                <div class="text-sm text-muted">
+                  {% if radio.choice_value == 'CL' %}
+                    Navegue, favorite e acompanhe obras dos seus imóveis de interesse
+                  {% else %}
+                    Publique imóveis, gerencie obras e receba notificações de interesse
+                  {% endif %}
+                </div>
+              </div>
+            </label>
+          {% endfor %}
+        </div>
+        {% if form.perfil.errors %}
+          <div class="text-red-400 text-sm mt-2">
+            {% for error in form.perfil.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Informações Pessoais -->
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="label">{{ form.first_name.label }}</label>
+          {{ form.first_name }}
+          {% if form.first_name.errors %}
+            <div class="text-red-400 text-sm mt-1">
+              {% for error in form.first_name.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        
+        <div>
+          <label class="label">{{ form.last_name.label }}</label>
+          {{ form.last_name }}
+          {% if form.last_name.errors %}
+            <div class="text-red-400 text-sm mt-1">
+              {% for error in form.last_name.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- E-mail e Telefone -->
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="label">{{ form.email.label }}</label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <div class="text-red-400 text-sm mt-1">
+              {% for error in form.email.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        
+        <div>
+          <label class="label">{{ form.telefone.label }}</label>
+          {{ form.telefone }}
+          {% if form.telefone.errors %}
+            <div class="text-red-400 text-sm mt-1">
+              {% for error in form.telefone.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Credenciais -->
+      <div>
+        <label class="label">{{ form.username.label }}</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+          <div class="text-red-400 text-sm mt-1">
+            {% for error in form.username.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <p class="text-muted text-sm mt-1">Será usado para fazer login</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="label">{{ form.password1.label }}</label>
+          {{ form.password1 }}
+          {% if form.password1.errors %}
+            <div class="text-red-400 text-sm mt-1">
+              {% for error in form.password1.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        
+        <div>
+          <label class="label">{{ form.password2.label }}</label>
+          {{ form.password2 }}
+          {% if form.password2.errors %}
+            <div class="text-red-400 text-sm mt-1">
+              {% for error in form.password2.errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Botões -->
+      <div class="flex gap-4 pt-4">
+        <button type="submit" class="btn-primary flex-1">
+          🚀 Criar Minha Conta
+        </button>
+        <a href="{% url 'home' %}" class="btn-secondary">
+          Cancelar
+        </a>
+      </div>
+    </form>
+
+    <div class="text-center mt-6 pt-6 border-t border-border">
+      <p class="text-muted">
+        Já tem uma conta? 
+        <a href="{% url 'login' %}" class="link-green">Fazer login</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Custom styles para radio buttons */
+input[type="radio"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+input[type="radio"]:checked {
+  border-color: var(--accent-green);
+  background-color: var(--accent-green);
+}
+
+input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Meus Imóveis{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-primary">🏠 Meus Imóveis</h1>
+      <p class="text-secondary">Gerencie seus anúncios e acompanhe o desempenho</p>
+    </div>
+    <a href="{% url 'imovel_novo' %}" class="btn-primary">
+      ➕ Novo Imóvel
+    </a>
+  </div>
+
+  {% if imoveis %}
+    <!-- Estatísticas Gerais -->
+    <div class="grid gap-4 grid-cols-1 md:grid-cols-4 mb-8">
+      <div class="card text-center">
+        <div class="text-3xl font-bold text-accent">{{ imoveis|length }}</div>
+        <div class="text-sm text-muted">Total de Imóveis</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-3xl font-bold text-accent">
+          {% widthratio imoveis|length 1 1 %}{% for imovel in imoveis %}{{ imovel.interessados.count|add:0 }}{% empty %}0{% endfor %}
+        </div>
+        <div class="text-sm text-muted">Total de Interessados</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-3xl font-bold text-accent">
+          {{ imoveis.0.data_pub|date:"M" }}
+        </div>
+        <div class="text-sm text-muted">Último Anúncio</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-3xl font-bold text-accent">R$</div>
+        <div class="text-sm text-muted">Valor Médio</div>
+      </div>
+    </div>
+
+    <!-- Lista de Imóveis -->
+    <div class="grid gap-6 grid-cols-1 md:grid-cols-2">
+      {% for imovel in imoveis %}
+        <div class="card">
+          <!-- Imagem -->
+          {% if imovel.capa_url %}
+            <img src="{{ imovel.capa_url }}" 
+                 alt="{{ imovel.titulo }}"
+                 class="w-full h-48 object-cover rounded-lg mb-4">
+          {% endif %}
+          
+          <!-- Informações -->
+          <div class="space-y-4">
+            <div>
+              <h3 class="text-lg font-semibold text-primary">{{ imovel.titulo }}</h3>
+              <p class="text-muted text-sm">{{ imovel.get_tipo_display }} • {{ imovel.quartos }} quartos</p>
+              <p class="text-accent text-xl font-bold">R$ {{ imovel.preco|floatformat:2 }}</p>
+              <p class="text-muted text-xs">
+                📅 Publicado {{ imovel.data_pub|naturaltime }}
+              </p>
+            </div>
+
+            <!-- Estatísticas do Imóvel -->
+            <div class="grid grid-cols-2 gap-4 p-4 rounded-lg" style="background-color: var(--bg-input);">
+              <div class="text-center">
+                <div class="text-xl font-bold text-accent">{{ imovel.interessados.count }}</div>
+                <div class="text-xs text-muted">Interessados</div>
+              </div>
+              <div class="text-center">
+                <div class="text-xl font-bold text-accent">{{ imovel.obras.count }}</div>
+                <div class="text-xs text-muted">Atualizações</div>
+              </div>
+            </div>
+
+            <!-- Botões de Ação -->
+            <div class="grid grid-cols-2 gap-2">
+              <a href="{% url 'imovel' imovel.pk %}" 
+                 class="btn-secondary text-center text-sm py-2">
+                👁️ Ver
+              </a>
+              <a href="{% url 'imovel_editar' imovel.pk %}" 
+                 class="btn-secondary text-center text-sm py-2">
+                ✏️ Editar
+              </a>
+              <a href="{% url 'works:timeline' imovel.pk %}" 
+                 class="btn-secondary text-center text-sm py-2">
+                🏗️ Obra
+              </a>
+              <a href="{% url 'imovel_excluir' imovel.pk %}" 
+                 class="btn-primary text-center text-sm py-2"
+                 style="background-color: var(--danger);"
+                 onmouseover="this.style.backgroundColor='#dc2626'"
+                 onmouseout="this.style.backgroundColor='var(--danger)'">
+                🗑️ Excluir
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- Estado Vazio -->
+    <div class="card text-center py-12">
+      <div class="text-6xl mb-6">🏠</div>
+      <h3 class="text-xl font-semibold text-primary mb-4">Nenhum imóvel cadastrado</h3>
+      <p class="text-secondary mb-6">
+        Comece criando seu primeiro anúncio e alcance milhares de clientes interessados.
+      </p>
+      <a href="{% url 'imovel_novo' %}" class="btn-primary">
+        🚀 Criar Primeiro Imóvel
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

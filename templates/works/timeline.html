@@ -1,20 +1,109 @@
 {% extends "base.html" %}
 {% block content %}
-<h1 class="text-2xl font-semibold mb-6">
-  Progresso da obra – {{ imovel.titulo }}
-</h1>
+<div class="animate-fade-in">
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-primary">📊 Progresso da Obra</h1>
+      <h2 class="text-xl text-accent">{{ imovel.titulo }}</h2>
+      <p class="text-secondary">{{ imovel.endereco }}</p>
+    </div>
+    <a href="{% url 'works:add' %}" class="btn-primary">
+      ➕ Nova Etapa
+    </a>
+  </div>
 
-<ul class="space-y-6">
-  {% for e in etapas %}
-    <li>
-      <p class="font-medium">{{ e.fase }} – {{ e.data|date:"d/m/Y" }}</p>
-      <div class="bg-gray-200 rounded-full h-4">
-        <div class="bg-primary-600 h-4 rounded-full transition-all"
-             style="width: {{ e.porcentagem }}%"></div>
+  {% if etapas %}
+    <!-- Progresso Geral -->
+    {% with ultima_etapa=etapas.0 %}
+      <div class="card mb-8">
+        <h3 class="text-lg font-semibold text-accent mb-4">🎯 Status Atual</h3>
+        <div class="grid gap-4 grid-cols-1 md:grid-cols-3">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-accent">{{ ultima_etapa.porcentagem }}%</div>
+            <div class="text-sm text-muted">Concluído</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-accent">{{ ultima_etapa.fase }}</div>
+            <div class="text-sm text-muted">Fase Atual</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-accent">{{ etapas|length }}</div>
+            <div class="text-sm text-muted">Atualizações</div>
+          </div>
+        </div>
+        
+        <div class="mt-6">
+          <div class="w-full bg-gray-600 rounded-full h-4">
+            <div class="h-4 rounded-full transition-all duration-1000" 
+                 style="background-color: var(--accent-green); width: {{ ultima_etapa.porcentagem }}%"></div>
+          </div>
+        </div>
       </div>
-    </li>
-  {% empty %}
-    <p>Nenhuma atualização ainda.</p>
-  {% endfor %}
-</ul>
+    {% endwith %}
+
+    <!-- Timeline das Etapas -->
+    <div class="card">
+      <h3 class="text-lg font-semibold text-accent mb-6">📅 Histórico de Etapas</h3>
+      <div class="space-y-6">
+        {% for etapa in etapas %}
+          <div class="flex gap-4">
+            <!-- Indicador Visual -->
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
+                 style="background-color: var(--accent-green);">
+              <span class="text-white font-bold text-sm">{{ etapa.porcentagem }}%</span>
+            </div>
+            
+            <!-- Conteúdo -->
+            <div class="flex-1 pb-6" style="border-bottom: 1px solid var(--border);">
+              <div class="flex justify-between items-start mb-2">
+                <h4 class="text-lg font-semibold text-primary">{{ etapa.fase }}</h4>
+                <span class="text-sm text-muted">{{ etapa.data|date:"d/m/Y" }}</span>
+              </div>
+              
+              <div class="flex items-center gap-4">
+                <div class="text-accent font-semibold">{{ etapa.porcentagem }}% concluído</div>
+                
+                {% if not forloop.last %}
+                  {% with etapa_anterior=etapas|slice:forloop.counter %}
+                    {% for anterior in etapa_anterior %}
+                      {% if forloop.first %}
+                        <div class="text-sm text-muted">
+                          +{{ etapa.porcentagem|add:anterior.porcentagem|add:"-"|add:anterior.porcentagem }}% desde última atualização
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  {% endwith %}
+                {% endif %}
+              </div>
+              
+              <!-- Barra de progresso individual -->
+              <div class="w-full bg-gray-600 rounded-full h-2 mt-3">
+                <div class="h-2 rounded-full" 
+                     style="background-color: var(--accent-green); width: {{ etapa.porcentagem }}%"></div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div class="card text-center py-12">
+      <div class="text-6xl mb-6">📊</div>
+      <h3 class="text-xl font-semibold text-primary mb-4">Nenhuma etapa registrada</h3>
+      <p class="text-secondary mb-6">
+        Comece registrando a primeira etapa da obra deste imóvel.
+      </p>
+      <a href="{% url 'works:add' %}" class="btn-primary">
+        ➕ Registrar Primeira Etapa
+      </a>
+    </div>
+  {% endif %}
+
+  <!-- Botão Voltar -->
+  <div class="text-center mt-8">
+    <a href="{% url 'works:meus' %}" class="btn-secondary">
+      ← Voltar para Minhas Obras
+    </a>
+  </div>
+</div>
 {% endblock %}
