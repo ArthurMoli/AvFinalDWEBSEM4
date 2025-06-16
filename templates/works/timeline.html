@@ -1,16 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="animate-fade-in">
-  <div class="flex justify-between items-center mb-8">
-    <div>
-      <h1 class="text-3xl font-bold text-primary">📊 Progresso da Obra</h1>
-      <h2 class="text-xl text-accent">{{ imovel.titulo }}</h2>
-      <p class="text-secondary">{{ imovel.endereco }}</p>
+  {% if sem_permissao %}
+    <div class="card bg-red-900/20 border-red-600 mb-8">
+      <p class="text-red-400">⚠️ Você não tem permissão para ver o status desta obra. Apenas o proprietário do imóvel pode acessar estas informações.</p>
     </div>
-    <a href="{% url 'works:add' %}" class="btn-primary">
-      ➕ Nova Etapa
-    </a>
-  </div>
+    <a href="{% url 'works:meus' %}" class="btn-secondary">← Voltar para Minhas Obras</a>
+  {% else %}
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-primary">📊 Progresso da Obra</h1>
+        <h2 class="text-xl text-accent">{{ imovel.titulo }}</h2>
+        <p class="text-secondary">{{ imovel.endereco }}</p>
+      </div>
+      <a href="{% url 'works:add' %}" class="btn-primary">
+        ➕ Nova Etapa
+      </a>
+    </div>
 
   {% if etapas %}
     <!-- Progresso Geral -->
@@ -105,5 +111,6 @@
       ← Voltar para Minhas Obras
     </a>
   </div>
+  {% endif %}
 </div>
 {% endblock %}

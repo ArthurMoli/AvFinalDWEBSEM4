@@ -322,11 +322,13 @@
             <a href="{% url 'meus_interesses' %}" class="link-green hover-lift">Meus Interesses</a>
           {% endif %}
 
+          <a href="{% url 'meus_imoveis' %}" class="link-green hover-lift">Meus Imóveis</a>
+          
           {% if user.perfil == 'CO' %}
-            <a href="{% url 'meus_imoveis' %}" class="link-green hover-lift">Meus Imóveis</a>
             <a href="{% url 'works:meus' %}" class="link-green hover-lift">Minhas Obras</a>
-            <a href="{% url 'imovel_novo' %}" class="btn-primary">+ Anunciar</a>
           {% endif %}
+          
+          <a href="{% url 'imovel_novo' %}" class="btn-primary">+ Anunciar</a>
 
           <a href="{% url 'notifications' %}" class="link-green hover-lift flex items-center gap-2">
             🔔 Notificações

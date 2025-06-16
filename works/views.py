@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
 
 # Create your views here.
 from django.views.generic import ListView
@@ -22,6 +23,11 @@ class ObraTimelineView(LoginRequiredMixin, ListView):
     context_object_name = "etapas"
 
     def get_queryset(self):
+        # Verifica se o usuário é o dono do imóvel
+        imovel = Imovel.objects.get(pk=self.kwargs["imovel_pk"])
+        if imovel.owner != self.request.user:
+            return ObraStatus.objects.none()
+            
         return (
             ObraStatus.objects
             .filter(imovel_id=self.kwargs["imovel_pk"])
@@ -30,7 +36,14 @@ class ObraTimelineView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["imovel"] = Imovel.objects.get(pk=self.kwargs["imovel_pk"])
+        imovel = Imovel.objects.get(pk=self.kwargs["imovel_pk"])
+        
+        # Verifica se o usuário é o dono do imóvel
+        if imovel.owner != self.request.user:
+            messages.error(self.request, "Você não tem permissão para ver o status desta obra.")
+            ctx["sem_permissao"] = True
+        
+        ctx["imovel"] = imovel
         return ctx
 
 from django.views.generic import CreateView

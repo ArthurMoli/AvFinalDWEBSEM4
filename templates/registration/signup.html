@@ -32,14 +32,14 @@
               {{ radio.tag }}
               <div>
                 <div class="font-medium text-primary">
-                  {% if radio.choice_value == 'CL' %}
+                  {% if radio.data.value == 'CL' %}
                     👥 Cliente - Quero encontrar imóveis
                   {% else %}
                     🏢 Corretor - Quero anunciar imóveis
                   {% endif %}
                 </div>
                 <div class="text-sm text-muted">
-                  {% if radio.choice_value == 'CL' %}
+                  {% if radio.data.value == 'CL' %}
                     Navegue, favorite e acompanhe obras dos seus imóveis de interesse
                   {% else %}
                     Publique imóveis, gerencie obras e receba notificações de interesse

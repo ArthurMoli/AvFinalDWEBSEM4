@@ -100,11 +100,10 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
             
-            # Se for corretor, dar permissão automaticamente
-            if user.perfil == 'CO':
-                from django.contrib.auth.models import Permission
-                permission = Permission.objects.get(codename='pode_publicar')
-                user.user_permissions.add(permission)
+            # Dar permissão de publicar imóveis para todos os usuários
+            from django.contrib.auth.models import Permission
+            permission = Permission.objects.get(codename='pode_publicar')
+            user.user_permissions.add(permission)
                 
         return user
 

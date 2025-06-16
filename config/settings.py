@@ -139,3 +139,19 @@ LOGOUT_REDIRECT_URL = "login"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email settings for password reset
+# Usando o console backend para desenvolvimento (imprime emails no terminal)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Para produção, use estas configurações com um servidor SMTP real:
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'seu-email@gmail.com'
+# EMAIL_HOST_PASSWORD = 'sua-senha-de-app'
+
+# Configurações gerais de email
+DEFAULT_FROM_EMAIL = 'noreply@imobiliaria.com'
+EMAIL_SUBJECT_PREFIX = '[Imobiliária] '

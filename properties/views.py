@@ -196,12 +196,8 @@ def meus_interesses(request):
 @login_required
 def meus_imoveis(request):
     """
-    Lista todos os imóveis do corretor logado
+    Lista todos os imóveis do usuário logado
     """
-    if request.user.perfil != 'CO':
-        messages.error(request, "Apenas corretores podem acessar esta página.")
-        return redirect('imoveis')
-        
     imoveis = Imovel.objects.filter(
         owner=request.user
     ).order_by('-data_pub')
