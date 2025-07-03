@@ -3,6 +3,13 @@
 {% for imovel in object_list %}
   <a href="{% url 'imovel' imovel.pk %}" class="property-card">
      
+     <!-- Indicador de status -->
+     {% if imovel.status == 'EO' %}
+       <div style="position: absolute; top: 0.75rem; left: 0.75rem; background-color: #f59e0b; color: white; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; z-index: 10;">
+         🚧 Em Obra
+       </div>
+     {% endif %}
+     
      <!-- Indicador de interesse (otimizado) -->
      {% if user.is_authenticated and user.perfil == 'CL' and meus_interesses_ids %}
        {% if imovel.pk in meus_interesses_ids %}
@@ -15,7 +22,7 @@
      <img src="{{ imovel.capa_url }}" alt="{{ imovel.titulo }}">
      <div class="property-info">
         <h3 class="property-title">{{ imovel.titulo }}</h3>
-        <p class="property-type">{{ imovel.get_tipo_display }}</p>
+        <p class="property-type">{{ imovel.get_tipo_display }} - {{ imovel.get_status_display }}</p>
         <p class="property-price">R$ {{ imovel.preco|floatformat:2 }}</p>
      </div>
   </a>

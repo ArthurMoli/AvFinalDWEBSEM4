@@ -87,7 +87,18 @@ class ImovelCreateView(LoginRequiredMixin,
     permission_required = "properties.pode_publicar"
     template_name = "properties/form.html"
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def form_valid(self, form):
+        # Validação extra: clientes só podem criar imóveis prontos
+        if (self.request.user.perfil == 'CL' and 
+            form.instance.status == 'EO'):
+            messages.error(self.request, 'Clientes só podem anunciar imóveis prontos.')
+            return self.form_invalid(form)
+        
         form.instance.owner = self.request.user
         messages.success(self.request, f'Imóvel "{form.instance.titulo}" criado com sucesso!')
         return super().form_valid(form)
@@ -112,7 +123,18 @@ class ImovelUpdateView(LoginRequiredMixin,
             raise PermissionDenied("Você só pode editar seus próprios imóveis.")
         return obj
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def form_valid(self, form):
+        # Validação extra: clientes só podem manter imóveis prontos
+        if (self.request.user.perfil == 'CL' and 
+            form.instance.status == 'EO'):
+            messages.error(self.request, 'Clientes só podem anunciar imóveis prontos.')
+            return self.form_invalid(form)
+        
         messages.success(self.request, f'Imóvel "{form.instance.titulo}" atualizado com sucesso!')
         return super().form_valid(form)
 

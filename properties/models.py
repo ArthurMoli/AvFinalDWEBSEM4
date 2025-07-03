@@ -3,10 +3,12 @@ from django.urls import reverse
 
 class Imovel(models.Model):
     TIPO_CHOICES = [('AP', 'Apartamento'), ('CA', 'Casa')]
+    STATUS_CHOICES = [('PR', 'Pronto'), ('EO', 'Em Obra')]
     titulo   = models.CharField(max_length=120)
     endereco = models.CharField(max_length=255)
     preco    = models.DecimalField(max_digits=12, decimal_places=2)
     tipo     = models.CharField(max_length=2, choices=TIPO_CHOICES)
+    status   = models.CharField(max_length=2, choices=STATUS_CHOICES, default='PR')
     quartos  = models.PositiveSmallIntegerField()
     descricao= models.TextField()
     capa_url = models.URLField(

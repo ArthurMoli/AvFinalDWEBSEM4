@@ -31,6 +31,16 @@
             <span class="text-primary font-medium">{{ object.get_tipo_display }}</span>
           </div>
           <div class="flex justify-between">
+            <span class="text-muted">Status:</span>
+            <span class="text-primary font-medium">
+              {% if object.status == 'EO' %}
+                🚧 {{ object.get_status_display }}
+              {% else %}
+                ✅ {{ object.get_status_display }}
+              {% endif %}
+            </span>
+          </div>
+          <div class="flex justify-between">
             <span class="text-muted">Quartos:</span>
             <span class="text-primary font-medium">{{ object.quartos }}</span>
           </div>

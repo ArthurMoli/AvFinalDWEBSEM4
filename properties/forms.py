@@ -17,10 +17,21 @@ class ImovelForm(forms.ModelForm):
             "endereco": "Endereço Completo",
             "preco": "Preço (R$)",
             "tipo": "Tipo de Imóvel",
+            "status": "Status do Imóvel",
             "quartos": "Número de Quartos",
             "descricao": "Descrição Detalhada",
             "capa_url": "URL da Imagem",
         }
+    
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        # Se o usuário é cliente, só pode selecionar 'Pronto'
+        if user and user.perfil == 'CL':
+            self.fields['status'].choices = [('PR', 'Pronto')]
+            self.fields['status'].initial = 'PR'
+            self.fields['status'].widget.attrs['readonly'] = True
 
     def clean_capa_url(self):
         url = self.cleaned_data.get('capa_url')
